@@ -13,7 +13,7 @@ This checklist follows the current official Obsidian developer documentation.
 - [x] README discloses account requirements, network use, and outside-vault executable/config access.
 - [x] Release tag exactly matches `manifest.json` version: `0.1.0`.
 - [x] Release has individual `main.js`, `manifest.json`, and `styles.css` assets.
-- [ ] Test the release in a separate vault on supported desktop platforms.
+- [x] Test the release in BastetMind and a separate personal vault on macOS desktop.
 
 ## Submit the initial version
 
@@ -26,6 +26,16 @@ This checklist follows the current official Obsidian developer documentation.
 7. After approval, add listing copy, categories, icon, and up to five 1200×800 desktop screenshots.
 
 Only the initial version needs manual directory submission. Later updates are discovered from matching GitHub releases.
+
+## Current hand-off status
+
+The release and repository are ready, but the Community website is not signed in on this machine. The remaining account-bound steps are:
+
+1. Sign in with the plugin owner's Obsidian account.
+2. Approve the read-only GitHub account connection.
+3. Review and submit the completed plugin form.
+
+Account authorization and the final public submission should be completed or explicitly approved by the account owner at action time.
 
 ## Official documentation
 

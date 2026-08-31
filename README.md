@@ -9,6 +9,14 @@
 </p>
 
 <p align="center">
+  <strong>English</strong> ·
+  <a href="README.zh-TW.md">繁體中文</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.ko.md">한국어</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/yamantaka520/Codex-Plugin-for-Obsidian/releases/latest"><img alt="GitHub release" src="https://img.shields.io/github/v/release/yamantaka520/Codex-Plugin-for-Obsidian?style=flat-square"></a>
   <a href="https://github.com/yamantaka520/Codex-Plugin-for-Obsidian/blob/main/LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-7c3aed?style=flat-square"></a>
   <img alt="Obsidian desktop only" src="https://img.shields.io/badge/Obsidian-desktop%20only-7c3aed?style=flat-square">
