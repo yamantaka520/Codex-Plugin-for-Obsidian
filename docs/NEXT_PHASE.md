@@ -71,6 +71,7 @@ Make Codex Workspace feel like a native, observable Obsidian collaborator instea
 - First data-foundation slice completed: versioned schema, 0.2.x migration, malformed-record recovery, bounded retention, repository operations, and integration with the active Codex conversation.
 - Conversation UI slice implemented: header switcher plus a management modal for filtering, rename, select, archive, restore, and confirmed local-only deletion; GUI acceptance remains deferred to the release-candidate matrix.
 - Local visible-history search and privacy-bounded Markdown export are implemented; export omits thread IDs/protocol data, sanitizes filenames, and never overwrites an existing file.
+- The 0.3.0 release candidate passed migration and restart recovery in the personal vault, plus a fresh-vault load in BastetMind. Both local installations now run the candidate; `20/20` tests, production build, and dependency audit pass.
 
 ### 0.4.0 — Change review
 

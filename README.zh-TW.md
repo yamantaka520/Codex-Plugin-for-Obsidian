@@ -79,15 +79,15 @@ Codex CLI，並把目前 Vault 當作工作目錄。
 
 下一階段的里程碑與驗收條件請見[執行規劃](docs/NEXT_PHASE.md)。
 
-0.2.1 是早期 public beta：一次只執行一個 Codex turn、已提供不顯示原始 payload 的安全進度串流、只支援本機檔案 Vault，
-且完整 GUI E2E 與 Windows 驗證仍在進行中。
+0.3.0 是早期 public beta：一次只執行一個 Codex turn，已支援安全進度、多個具名對話、本機搜尋、封存、
+Markdown 匯出與確認刪除；只支援本機檔案 Vault，Windows 驗證仍在進行中。
 
 - [x] 在面板串流不洩漏原始 command payload 的安全進度與 tool event。
-- [ ] 多個具名對話與歷史管理。
+- [x] 多個具名對話與歷史管理。
 - [x] 明確加入目前筆記或選取文字，並在傳送前於本機預覽。
 - [ ] 檔案異動 review 與接受／拒絕操作。
 - [ ] 完成跨平台 GUI 測試。
-- [x] 已提交 Obsidian Community Directory；自動審查修正仍在進行。
+- [x] 已提交 Obsidian Community Directory；自動審查通過，人工審查已送出。
 
 ## 開發
 

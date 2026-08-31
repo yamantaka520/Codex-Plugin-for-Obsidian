@@ -55,9 +55,9 @@ Codex CLI，并将当前 Vault 作为工作目录。
 
 ## 当前限制与 Roadmap
 
-0.2.1 是早期 public beta：一次只执行一个 Codex turn、已提供不显示原始 payload 的安全进度流、只支持本地文件 Vault，
-完整 GUI E2E 与 Windows 验证仍在进行中。后续将加入多会话、当前笔记 context、文件变更 review，
-并继续处理 Obsidian Community Directory 自动审查。详见[下一阶段执行计划](docs/NEXT_PHASE.md)。
+0.3.0 是早期 public beta：一次只执行一个 Codex turn，已支持安全进度、多会话、本地搜索、归档、
+Markdown 导出与确认删除；只支持本地文件 Vault，Windows 与文件变更 review 仍待完成。
+Community 自动审查已通过，人工审查已提交。详见[下一阶段执行计划](docs/NEXT_PHASE.md)。
 
 ## 开发
 

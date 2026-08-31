@@ -39,9 +39,9 @@ Turn the single persisted chat into a small, reliable conversation workspace wit
 ## Implementation slices
 
 1. **Completed:** versioned data schema, runtime validation, migration, repository methods, and unit tests.
-2. **Completed in code; GUI acceptance pending:** conversation switcher, creation, rename, archive, restore, and deletion flows.
-3. **Completed in code; GUI acceptance pending:** local search and Markdown export with privacy-focused fixtures.
-4. Restart recovery, corrupted-data recovery, two-vault GUI matrix, docs, and release verification.
+2. **Completed:** conversation switcher, creation, rename, archive, restore, and confirmed local deletion flows.
+3. **Completed:** local search and Markdown export with privacy-focused fixtures.
+4. **Release candidate verified:** restart recovery, migration, two-vault GUI smoke tests, docs, and release checks.
 
 ## Implementation status
 
@@ -52,7 +52,9 @@ Turn the single persisted chat into a small, reliable conversation workspace wit
 - Existing send, resume, progress, and message persistence now use the selected conversation. Creating a new chat creates a separate record instead of erasing prior history.
 - The sidebar header now includes a non-archived conversation switcher and a management modal. The modal supports title filtering, inline rename, select, archive, restore, and deletion with an explicit confirmation that deletion is local-only.
 - Conversation search now matches titles and visible message text locally. Markdown export includes only the title, export time, visible roles, timestamps, and visible message content; it excludes Codex thread IDs and protocol data, sanitizes filenames, and avoids overwriting existing exports.
-- `20/20` tests, production build, and production dependency audit pass. This remains development code and has not replaced the stable `0.2.1` installation in either vault.
+- Personal-vault GUI acceptance preserved the migrated 0.2.x conversation, visible messages, and resumable thread across an Obsidian restart. New conversation, rename, archive, restore, management search, and Markdown export flows were exercised without launching Codex during recovery.
+- BastetMind passed a fresh-vault load with the 0.3.0 conversation controls visible. Both configured vaults are installed and enabled with the 0.3.0 release candidate.
+- `20/20` tests, production build, and dependency audit pass with zero known vulnerabilities. The Community-scanner recommendation for deprecated `activeLeaf` access was also removed.
 
 ## Acceptance criteria
 

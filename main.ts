@@ -16,7 +16,10 @@ export default class CodexWorkspacePlugin extends Plugin {
   async onload(): Promise<void> {
     await this.loadSettings();
 
-    this.rememberMarkdownView(this.app.workspace.activeLeaf);
+    const activeMarkdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (activeMarkdownView?.file) {
+      this.lastMarkdownView = activeMarkdownView;
+    }
     this.registerEvent(
       this.app.workspace.on("active-leaf-change", (leaf) => this.rememberMarkdownView(leaf))
     );

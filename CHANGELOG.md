@@ -2,6 +2,25 @@
 
 All notable changes to Codex Workspace are documented here.
 
+## 0.3.0 - 2026-08-31
+
+### Added
+
+- Multiple named conversations with per-conversation Codex thread resume state.
+- Conversation switcher and management modal with rename, archive, restore, and confirmed local deletion.
+- Local search across conversation titles and visible message text.
+- Privacy-bounded Markdown export that excludes Codex thread and protocol data.
+
+### Changed
+
+- Plugin data now uses a runtime-validated, versioned schema with bounded retention.
+- Existing 0.2.x session and visible messages migrate once into a resumable conversation without erasing history.
+- Starting a new chat creates a separate conversation instead of clearing the previous one.
+
+### Security
+
+- Malformed records are isolated during load, exports never overwrite existing files, and deletion explicitly affects local plugin data only.
+
 ## 0.2.1 - 2026-08-31
 
 ### Fixed
