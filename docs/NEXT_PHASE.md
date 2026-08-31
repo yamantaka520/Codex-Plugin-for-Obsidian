@@ -67,6 +67,7 @@ Make Codex Workspace feel like a native, observable Obsidian collaborator instea
 
 - Multiple named conversations, searchable history, rename, archive, export, and deletion.
 - Session recovery after Obsidian restart and clear retention controls.
+- Detailed implementation and acceptance plan: [`ROADMAP_0.3.md`](ROADMAP_0.3.md).
 
 ### 0.4.0 — Change review
 

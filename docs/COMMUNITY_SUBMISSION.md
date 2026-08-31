@@ -33,10 +33,12 @@ Submitted and published to the Community site on August 31, 2026:
 
 - Entry: <https://community.obsidian.md/plugins/codex-workspace>
 - Initial review: `0.1.0` / `799ce23` failed because the settings heading did not use `Setting.setHeading()`
-- Fix release: `0.1.1` / `f489a7f`, published successfully and awaiting Community ingestion
+- `0.1.1` / `f489a7f` passed release, network, dependency, attestation, and reproducible-build checks but failed because the settings heading repeated the plugin name.
+- Feature release: `0.2.0` / `e9b36ce`, published successfully with verified release assets and attestations.
+- Current review fix: `0.2.1` / `7fe49bd`, changes the settings heading to the generic `一般設定`; the Community scan was queued on August 31, 2026 and is pending.
 - Passed in the initial review: network request scan, dependency vulnerability scan, and byte-for-byte build reproduction
 - Expected warnings: direct filesystem access and shell execution, both disclosed because the plugin launches Codex CLI and works with the local vault
-- Recommendation addressed in `0.1.1`: GitHub artifact attestations for `main.js` and `styles.css` were generated and verified with GitHub CLI
+- Recommendation addressed since `0.1.1`: GitHub artifact attestations for `main.js` and `styles.css` are generated and verified with GitHub CLI for every tagged release.
 
 ## Official documentation
 
