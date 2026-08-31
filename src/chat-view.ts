@@ -1,4 +1,4 @@
-import { ItemView, MarkdownRenderer, Notice, setIcon, WorkspaceLeaf } from "obsidian";
+import { ItemView, MarkdownRenderer, Modal, Notice, setIcon, WorkspaceLeaf } from "obsidian";
 import type CodexWorkspacePlugin from "../main";
 import type { CodexProgressEvent } from "./codex-events";
 import {
@@ -18,6 +18,7 @@ export class CodexChatView extends ItemView {
   private statusEl!: HTMLElement;
   private progressEl!: HTMLElement;
   private contextEl!: HTMLElement;
+  private conversationSelect!: HTMLSelectElement;
   private noteContextButton!: HTMLButtonElement;
   private selectionContextButton!: HTMLButtonElement;
   private contextAttachment: ContextAttachment | null = null;
@@ -53,6 +54,22 @@ export class CodexChatView extends ItemView {
     const logo = title.createSpan({ cls: "codex-obsidian-logo" });
     setIcon(logo, "bot");
     title.createSpan({ text: "Codex" });
+
+    this.conversationSelect = header.createEl("select", {
+      cls: "codex-obsidian-conversation-select",
+      attr: { "aria-label": "切換對話" }
+    });
+    this.renderConversationOptions();
+    this.conversationSelect.addEventListener("change", () => void this.switchConversation());
+
+    const manage = header.createEl("button", {
+      cls: "clickable-icon codex-obsidian-icon-button",
+      attr: { "aria-label": "管理對話" }
+    });
+    setIcon(manage, "messages-square");
+    manage.addEventListener("click", () => {
+      new ConversationManagerModal(this.plugin, () => void this.refreshConversation()).open();
+    });
 
     const newChat = header.createEl("button", {
       cls: "clickable-icon codex-obsidian-icon-button",
@@ -189,9 +206,40 @@ export class CodexChatView extends ItemView {
       return;
     }
     await this.plugin.startNewChat();
+    this.renderConversationOptions();
     this.resetProgress();
     await this.renderMessages();
     this.setStatus("已開始新對話");
+    this.inputEl.focus();
+  }
+
+  private renderConversationOptions(): void {
+    this.conversationSelect.empty();
+    for (const conversation of this.plugin.allConversations.filter(({ archived }) => !archived)) {
+      const option = this.conversationSelect.createEl("option", {
+        text: conversation.title,
+        value: conversation.id
+      });
+      option.selected = conversation.id === this.plugin.activeConversation.id;
+    }
+  }
+
+  private async switchConversation(): Promise<void> {
+    if (this.plugin.codex.running) {
+      this.conversationSelect.value = this.plugin.activeConversation.id;
+      new Notice("請先停止目前的 Codex 執行。", 5000);
+      return;
+    }
+    await this.plugin.selectConversation(this.conversationSelect.value);
+    await this.refreshConversation();
+  }
+
+  private async refreshConversation(): Promise<void> {
+    this.clearContext();
+    this.resetProgress();
+    this.renderConversationOptions();
+    await this.renderMessages();
+    this.setStatus(this.plugin.activeConversation.threadId ? "已連接既有對話" : "準備就緒");
     this.inputEl.focus();
   }
 
@@ -273,6 +321,132 @@ export class CodexChatView extends ItemView {
 
   private scrollToBottom(): void {
     this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
+  }
+}
+
+class ConversationManagerModal extends Modal {
+  private query = "";
+
+  constructor(
+    private readonly plugin: CodexWorkspacePlugin,
+    private readonly onChange: () => void
+  ) {
+    super(plugin.app);
+  }
+
+  onOpen(): void {
+    this.setTitle("管理對話");
+    this.renderBody();
+  }
+
+  private renderBody(): void {
+    const { contentEl } = this;
+    contentEl.empty();
+    const search = contentEl.createEl("input", {
+      type: "search",
+      value: this.query,
+      placeholder: "搜尋對話標題…",
+      attr: { "aria-label": "搜尋對話" }
+    });
+    search.addEventListener("input", () => {
+      this.query = search.value;
+      this.renderList();
+    });
+    contentEl.createDiv({ cls: "codex-obsidian-conversation-list" });
+    this.renderList();
+    search.focus();
+  }
+
+  private renderList(): void {
+    const list = this.contentEl.querySelector<HTMLElement>(".codex-obsidian-conversation-list");
+    if (!list) return;
+    list.empty();
+    const query = this.query.trim().toLocaleLowerCase();
+    const conversations = this.plugin.allConversations.filter(({ title }) =>
+      !query || title.toLocaleLowerCase().includes(query)
+    );
+    if (conversations.length === 0) {
+      list.createDiv({ cls: "codex-obsidian-conversation-empty", text: "找不到符合的對話。" });
+      return;
+    }
+    for (const conversation of conversations) this.renderRow(list, conversation.id);
+  }
+
+  private renderRow(list: HTMLElement, id: string): void {
+    const conversation = this.plugin.allConversations.find((item) => item.id === id);
+    if (!conversation) return;
+    const row = list.createDiv({ cls: "codex-obsidian-conversation-row" });
+    if (conversation.id === this.plugin.activeConversation.id) row.addClass("is-active");
+    const details = row.createDiv({ cls: "codex-obsidian-conversation-details" });
+    const title = details.createEl("input", {
+      type: "text",
+      value: conversation.title,
+      attr: { "aria-label": `重新命名 ${conversation.title}` }
+    });
+    details.createDiv({
+      cls: "codex-obsidian-conversation-meta",
+      text: `${conversation.messages.length} 則訊息 · ${conversation.archived ? "已封存" : "使用中"}`
+    });
+    title.addEventListener("change", async () => {
+      await this.plugin.renameConversation(id, title.value);
+      this.onChange();
+      this.renderList();
+    });
+
+    const actions = row.createDiv({ cls: "codex-obsidian-conversation-row-actions" });
+    if (!conversation.archived && conversation.id !== this.plugin.activeConversation.id) {
+      this.iconButton(actions, "message-circle", "切換至此對話", async () => {
+        await this.plugin.selectConversation(id);
+        this.onChange();
+        this.renderList();
+      });
+    }
+    this.iconButton(actions, conversation.archived ? "archive-restore" : "archive", conversation.archived ? "恢復" : "封存", async () => {
+      await this.plugin.setConversationArchived(id, !conversation.archived);
+      this.onChange();
+      this.renderList();
+    });
+    this.iconButton(actions, "trash-2", "刪除", () => {
+      new DeleteConversationModal(this.plugin, id, async () => {
+        this.onChange();
+        this.renderList();
+      }).open();
+    });
+  }
+
+  private iconButton(container: HTMLElement, iconName: string, label: string, action: () => void | Promise<void>): void {
+    const button = container.createEl("button", {
+      cls: "clickable-icon",
+      attr: { "aria-label": label }
+    });
+    setIcon(button, iconName);
+    button.addEventListener("click", () => void action());
+  }
+}
+
+class DeleteConversationModal extends Modal {
+  constructor(
+    private readonly plugin: CodexWorkspacePlugin,
+    private readonly conversationId: string,
+    private readonly onDeleted: () => void | Promise<void>
+  ) {
+    super(plugin.app);
+  }
+
+  onOpen(): void {
+    this.setTitle("刪除本機對話？");
+    this.contentEl.createEl("p", {
+      text: "這會刪除此 Vault 中保存的可見訊息與本機 thread 參照，但不會刪除 Codex 服務端的帳號紀錄。"
+    });
+    const actions = this.contentEl.createDiv({ cls: "codex-obsidian-confirm-actions" });
+    const cancel = actions.createEl("button", { text: "取消" });
+    cancel.addEventListener("click", () => this.close());
+    const confirm = actions.createEl("button", { text: "刪除", cls: "mod-warning" });
+    confirm.addEventListener("click", async () => {
+      await this.plugin.deleteConversation(this.conversationId);
+      await this.onDeleted();
+      this.close();
+    });
   }
 }
 

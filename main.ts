@@ -67,6 +67,33 @@ export default class CodexWorkspacePlugin extends Plugin {
     return this.conversations.active;
   }
 
+  get allConversations(): readonly Conversation[] {
+    return this.settings.conversations;
+  }
+
+  async selectConversation(id: string): Promise<Conversation> {
+    const conversation = this.conversations.select(id);
+    await this.persistSettings();
+    return conversation;
+  }
+
+  async renameConversation(id: string, title: string): Promise<Conversation> {
+    const conversation = this.conversations.rename(id, title);
+    await this.persistSettings();
+    return conversation;
+  }
+
+  async setConversationArchived(id: string, archived: boolean): Promise<Conversation> {
+    const conversation = this.conversations.setArchived(id, archived);
+    await this.persistSettings();
+    return conversation;
+  }
+
+  async deleteConversation(id: string): Promise<void> {
+    this.conversations.delete(id);
+    await this.persistSettings();
+  }
+
   async activateView(): Promise<void> {
     const workspace = this.app.workspace;
     let leaf = workspace.getLeavesOfType(CODEX_VIEW_TYPE)[0];

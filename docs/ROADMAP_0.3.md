@@ -39,7 +39,7 @@ Turn the single persisted chat into a small, reliable conversation workspace wit
 ## Implementation slices
 
 1. **Completed:** versioned data schema, runtime validation, migration, repository methods, and unit tests.
-2. Conversation switcher, creation, rename, archive, restore, and deletion flows.
+2. **Completed in code; GUI acceptance pending:** conversation switcher, creation, rename, archive, restore, and deletion flows.
 3. Local search and Markdown export with privacy-focused fixtures.
 4. Restart recovery, corrupted-data recovery, two-vault GUI matrix, docs, and release verification.
 
@@ -50,6 +50,7 @@ Turn the single persisted chat into a small, reliable conversation workspace wit
 - Runtime loading isolates malformed conversations/messages, preserves recognized data with future fields, restores a valid active conversation, and recovers all-archived stores.
 - Repository operations cover create, select, rename, archive, restore, delete, thread updates, first-prompt titles, and bounded retention (100 conversations; 500 visible messages each).
 - Existing send, resume, progress, and message persistence now use the selected conversation. Creating a new chat creates a separate record instead of erasing prior history.
+- The sidebar header now includes a non-archived conversation switcher and a management modal. The modal supports title filtering, inline rename, select, archive, restore, and deletion with an explicit confirmation that deletion is local-only.
 - `17/17` tests, production build, and production dependency audit pass. This remains development code and has not replaced the stable `0.2.1` installation in either vault.
 
 ## Acceptance criteria

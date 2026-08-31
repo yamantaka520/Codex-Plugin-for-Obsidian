@@ -22,6 +22,58 @@
   font-weight: var(--font-semibold);
 }
 
+.codex-obsidian-conversation-select {
+  min-width: 0;
+  flex: 1;
+  max-width: 14rem;
+}
+
+.codex-obsidian-conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.codex-obsidian-conversation-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+}
+
+.codex-obsidian-conversation-row.is-active {
+  border-color: var(--interactive-accent);
+}
+
+.codex-obsidian-conversation-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.codex-obsidian-conversation-details input {
+  width: 100%;
+}
+
+.codex-obsidian-conversation-meta,
+.codex-obsidian-conversation-empty {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  margin-top: 0.25rem;
+}
+
+.codex-obsidian-conversation-row-actions,
+.codex-obsidian-confirm-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.codex-obsidian-confirm-actions {
+  justify-content: flex-end;
+}
+
 .codex-obsidian-logo,
 .codex-obsidian-empty-icon {
   color: var(--interactive-accent);
