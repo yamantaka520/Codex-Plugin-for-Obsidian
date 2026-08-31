@@ -51,7 +51,7 @@ Obsidian 左側 Ribbon の Codex アイコンをクリックすると、右サ�
 
 ## 現在の制限
 
-0.1.1 は初期 public beta です。同時実行は 1 turn、tool event のストリーミングは未対応、
+0.2.0 は初期 public beta です。同時実行は 1 turn、安全な progress event ストリーミングに対応し、
 ローカル Vault のみ対応です。今後は複数会話、現在ノートの context、変更 review、Windows 検証、
 Obsidian Community Directory の自動レビュー対応を進めます。詳細は[次フェーズ計画](docs/NEXT_PHASE.md)をご覧ください。
 

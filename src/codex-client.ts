@@ -46,19 +46,7 @@ export class CodexClient {
     if (this.child) throw new Error("Codex is already processing a request.");
 
     const executable = await this.resolveExecutable(settings.codexPath);
-    const args = settings.sessionId
-      ? ["exec", "resume", "--json", settings.sessionId, "-"]
-      : [
-          "exec",
-          "--json",
-          "--skip-git-repo-check",
-          "--sandbox",
-          settings.sandboxMode,
-          ...(settings.approveForMe ? ["--approve-for-me"] : []),
-          "--cd",
-          vaultPath,
-          "-"
-        ];
+    const args = buildCodexArgs(settings, vaultPath);
 
     callbacks.onStatus(settings.sessionId ? "正在繼續對話…" : "正在啟動 Codex…");
 
@@ -127,6 +115,26 @@ export class CodexClient {
   get running(): boolean {
     return this.child !== null;
   }
+}
+
+export function buildCodexArgs(settings: PluginSettings, vaultPath: string): string[] {
+  if (settings.sessionId) {
+    return ["exec", "resume", "--json", settings.sessionId, "-"];
+  }
+
+  const approvalArgs = settings.approveForMe && settings.sandboxMode === "workspace-write"
+    ? ["--approve-for-me"]
+    : ["--sandbox", settings.sandboxMode];
+
+  return [
+    "exec",
+    "--json",
+    "--skip-git-repo-check",
+    ...approvalArgs,
+    "--cd",
+    vaultPath,
+    "-"
+  ];
 }
 
 function cleanError(stderr: string): string {

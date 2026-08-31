@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { CodexClient } from "../src/codex-client.ts";
+import { buildCodexArgs, CodexClient } from "../src/codex-client.ts";
 
 const executable = fileURLToPath(new URL("./fixtures/fake-codex.mjs", import.meta.url));
 
@@ -35,6 +35,27 @@ test("uses the resume path when a session id exists", async () => {
     onProgress: () => undefined
   });
   assert.equal(response, "已繼續");
+});
+
+test("never combines explicit sandbox and approve-for-me", () => {
+  const writable = buildCodexArgs({
+    ...settings(null),
+    approveForMe: true,
+    sandboxMode: "workspace-write"
+  }, "/vault");
+  assert.equal(writable.includes("--approve-for-me"), true);
+  assert.equal(writable.includes("--sandbox"), false);
+
+  const readOnly = buildCodexArgs({
+    ...settings(null),
+    approveForMe: true,
+    sandboxMode: "read-only"
+  }, "/vault");
+  assert.equal(readOnly.includes("--approve-for-me"), false);
+  assert.deepEqual(readOnly.slice(readOnly.indexOf("--sandbox"), readOnly.indexOf("--sandbox") + 2), [
+    "--sandbox",
+    "read-only"
+  ]);
 });
 
 test("surfaces normalized turn failures", async () => {

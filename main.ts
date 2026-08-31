@@ -1,4 +1,4 @@
-import { FileSystemAdapter, Notice, Plugin, WorkspaceLeaf } from "obsidian";
+import { FileSystemAdapter, MarkdownView, Notice, Plugin, WorkspaceLeaf } from "obsidian";
 import { CodexChatView, CODEX_VIEW_TYPE } from "./src/chat-view";
 import { CodexClient } from "./src/codex-client";
 import type { CodexProgressEvent } from "./src/codex-events";
@@ -16,9 +16,15 @@ const DEFAULT_SETTINGS: PluginSettings = {
 export default class CodexWorkspacePlugin extends Plugin {
   declare settings: PluginSettings;
   readonly codex = new CodexClient();
+  private lastMarkdownView: MarkdownView | null = null;
 
   async onload(): Promise<void> {
     await this.loadSettings();
+
+    this.rememberMarkdownView(this.app.workspace.activeLeaf);
+    this.registerEvent(
+      this.app.workspace.on("active-leaf-change", (leaf) => this.rememberMarkdownView(leaf))
+    );
 
     this.registerView(
       CODEX_VIEW_TYPE,
@@ -44,6 +50,23 @@ export default class CodexWorkspacePlugin extends Plugin {
 
   onunload(): void {
     this.codex.stop();
+  }
+
+  getContextMarkdownView(): MarkdownView | null {
+    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (activeView?.file) {
+      this.lastMarkdownView = activeView;
+      return activeView;
+    }
+
+    if (this.lastMarkdownView?.file) return this.lastMarkdownView;
+
+    const fallback = this.app.workspace
+      .getLeavesOfType("markdown")
+      .map((leaf) => leaf.view)
+      .find((view): view is MarkdownView => view instanceof MarkdownView && view.file !== null);
+    this.lastMarkdownView = fallback ?? null;
+    return this.lastMarkdownView;
   }
 
   async activateView(): Promise<void> {
@@ -105,5 +128,11 @@ export default class CodexWorkspacePlugin extends Plugin {
       ...(stored ?? {}),
       messages: Array.isArray(stored?.messages) ? stored.messages : []
     };
+  }
+
+  private rememberMarkdownView(leaf: WorkspaceLeaf | null): void {
+    if (leaf?.view instanceof MarkdownView && leaf.view.file) {
+      this.lastMarkdownView = leaf.view;
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "codex-workspace",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Codex CLI conversation panel for Obsidian",
   "main": "main.js",
   "scripts": {

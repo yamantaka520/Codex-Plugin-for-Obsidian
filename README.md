@@ -106,10 +106,10 @@ See [SECURITY.md](SECURITY.md) for the threat model and reporting process.
 
 ## Current scope
 
-Version 0.1.0 is an early public beta:
+Version 0.2.0 is an early public beta:
 
 - one Codex turn runs at a time;
-- final Markdown responses are shown, but tool events are not streamed into the panel yet;
+- safe progress events are streamed into the panel without raw command payloads;
 - only local filesystem vaults are supported;
 - the release is desktop-only;
 - full GUI end-to-end verification is still in progress.
@@ -118,9 +118,9 @@ Version 0.1.0 is an early public beta:
 
 See the [next-phase execution plan](docs/NEXT_PHASE.md) for milestones and acceptance criteria.
 
-- [ ] Stream Codex progress and tool events into the panel.
+- [x] Stream privacy-preserving Codex progress and tool events into the panel.
 - [ ] Add multiple named conversations and history management.
-- [ ] Add active-note and text-selection context controls.
+- [x] Add explicit active-note and text-selection context controls with local preview.
 - [ ] Show file changes with review and accept/reject actions.
 - [ ] Complete Windows and independent-vault GUI test matrices.
 - [x] Submit to the official Obsidian Community directory; automated review remediation is in progress.

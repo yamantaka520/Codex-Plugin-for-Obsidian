@@ -1,4 +1,4 @@
-import { ItemView, MarkdownRenderer, MarkdownView, Notice, setIcon, WorkspaceLeaf } from "obsidian";
+import { ItemView, MarkdownRenderer, Notice, setIcon, WorkspaceLeaf } from "obsidian";
 import type CodexWorkspacePlugin from "../main";
 import type { CodexProgressEvent } from "./codex-events";
 import {
@@ -222,7 +222,7 @@ export class CodexChatView extends ItemView {
   }
 
   private attachContext(kind: ContextAttachment["kind"]): void {
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    const view = this.plugin.getContextMarkdownView();
     if (!view?.file) {
       new Notice("請先開啟一份 Markdown 筆記。", 5000);
       return;

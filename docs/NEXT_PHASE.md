@@ -12,7 +12,15 @@ Make Codex Workspace feel like a native, observable Obsidian collaborator instea
 - [x] Process integration coverage for new and resumed sessions using a deterministic fake Codex executable.
 - [x] Active-note and text-selection context controls with exact local preview, one-shot sending, and size validation.
 - [x] Process integration tests for start, resume, failure, stop, cleanup, and reuse.
-- [ ] Two-vault GUI acceptance for the `0.2.0` release candidate.
+- [x] Two-vault installation and GUI acceptance for the `0.2.0` release candidate.
+
+## Release-candidate verification
+
+- `12/12` parser, context, and fake-process tests pass; production build and dependency audit pass with zero vulnerabilities.
+- Current Codex CLI smoke test completed in the personal notebook with a safe no-file prompt, streamed progress, and final response `RC_OK`.
+- BastetMind verified exact active-note preview for `index.md` after focus moved into the Codex sidebar.
+- Both BastetMind and the personal notebook are installed and enabled with `0.2.0` release-candidate artifacts.
+- GUI testing found and fixed two release blockers: mutually exclusive CLI approval/sandbox flags, and loss of the active Markdown view when the sidebar receives focus.
 
 ## 0.2.0 — Live progress and explicit context
 

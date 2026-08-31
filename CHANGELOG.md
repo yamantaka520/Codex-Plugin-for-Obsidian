@@ -2,6 +2,28 @@
 
 All notable changes to Codex Workspace are documented here.
 
+## 0.2.0 - 2026-08-31
+
+### Added
+
+- Live, privacy-preserving progress timeline for Codex turn, command, file-change, and tool events.
+- Explicit active-note and text-selection attachments with an exact local preview before sending.
+- Runtime-validated Codex JSONL normalization with forward-compatible handling of unknown events.
+
+### Changed
+
+- Context attachments are one-shot and reject empty or oversized content.
+- Test coverage now includes parser, context, new-session, resume, failure, stop, cleanup, and process reuse paths.
+
+### Fixed
+
+- Avoid passing the mutually exclusive `--sandbox` and `--approve-for-me` flags to current Codex CLI versions.
+- Keep the most recently focused Markdown view available for context attachment after focus moves to the Codex sidebar.
+
+### Security
+
+- Raw command payloads, unknown event fields, hidden reasoning, and environment dumps are not rendered or persisted.
+
 ## 0.1.1 - 2026-08-31
 
 ### Fixed

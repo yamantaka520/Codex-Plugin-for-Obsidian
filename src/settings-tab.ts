@@ -42,7 +42,7 @@ export class CodexSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("自動審核核准要求")
-      .setDesc("交由 Codex 的自動審核機制判斷工作區寫入與命令；不會停用沙箱。")
+      .setDesc("工作區寫入模式下交由 Codex 自動審核；唯讀模式仍固定使用 read-only 沙箱。")
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.settings.approveForMe).onChange(async (value) => {
           this.plugin.settings.approveForMe = value;
