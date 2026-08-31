@@ -77,6 +77,8 @@ Codex CLI，並把目前 Vault 當作工作目錄。
 
 ## 目前限制與 Roadmap
 
+下一階段的里程碑與驗收條件請見[執行規劃](docs/NEXT_PHASE.md)。
+
 0.1.0 是早期 public beta：一次只執行一個 Codex turn、尚未串流 tool event、只支援本機檔案 Vault，
 且完整 GUI E2E 與 Windows 驗證仍在進行中。
 
@@ -85,7 +87,7 @@ Codex CLI，並把目前 Vault 當作工作目錄。
 - [ ] 主動加入目前筆記或選取文字的 context。
 - [ ] 檔案異動 review 與接受／拒絕操作。
 - [ ] 完成跨平台 GUI 測試。
-- [ ] 通過 Obsidian Community Directory 審查。
+- [x] 已提交 Obsidian Community Directory；自動審查修正仍在進行。
 
 ## 開發
 

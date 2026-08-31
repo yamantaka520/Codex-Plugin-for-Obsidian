@@ -55,9 +55,9 @@ Codex CLI，并将当前 Vault 作为工作目录。
 
 ## 当前限制与 Roadmap
 
-0.1.0 是早期 public beta：一次只执行一个 Codex turn、尚未流式显示 tool event、只支持本地文件 Vault，
+0.1.1 是早期 public beta：一次只执行一个 Codex turn、尚未流式显示 tool event、只支持本地文件 Vault，
 完整 GUI E2E 与 Windows 验证仍在进行中。后续将加入多会话、当前笔记 context、文件变更 review，
-并提交 Obsidian Community Directory 审查。
+并继续处理 Obsidian Community Directory 自动审查。详见[下一阶段执行计划](docs/NEXT_PHASE.md)。
 
 ## 开发
 

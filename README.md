@@ -116,12 +116,14 @@ Version 0.1.0 is an early public beta:
 
 ## Roadmap
 
+See the [next-phase execution plan](docs/NEXT_PHASE.md) for milestones and acceptance criteria.
+
 - [ ] Stream Codex progress and tool events into the panel.
 - [ ] Add multiple named conversations and history management.
 - [ ] Add active-note and text-selection context controls.
 - [ ] Show file changes with review and accept/reject actions.
 - [ ] Complete Windows and independent-vault GUI test matrices.
-- [ ] Submit to the official Obsidian Community directory.
+- [x] Submit to the official Obsidian Community directory; automated review remediation is in progress.
 
 ## Develop
 
