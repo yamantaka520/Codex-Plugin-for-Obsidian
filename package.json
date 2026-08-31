@@ -1,0 +1,20 @@
+{
+  "name": "codex-workspace",
+  "version": "0.1.0",
+  "description": "Codex CLI conversation panel for Obsidian",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "keywords": ["obsidian", "codex", "chatgpt"],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "builtin-modules": "^4.0.0",
+    "esbuild": "^0.24.2",
+    "obsidian": "latest",
+    "typescript": "^5.7.2"
+  }
+}
