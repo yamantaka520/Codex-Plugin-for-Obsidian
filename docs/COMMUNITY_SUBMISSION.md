@@ -37,7 +37,7 @@ Submitted and published to the Community site on August 31, 2026:
 - Status: automated review pending
 - Passed so far: network request scan and dependency vulnerability scan
 - Expected warnings: direct filesystem access and shell execution, both disclosed because the plugin launches Codex CLI and works with the local vault
-- Recommendation: add GitHub artifact attestations for `main.js` and `styles.css`
+- Recommendation addressed on `main`: future tagged releases generate GitHub artifact attestations for `main.js` and `styles.css`
 
 ## Official documentation
 

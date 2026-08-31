@@ -10,7 +10,8 @@ export class CodexSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    containerEl.createEl("h2", { text: "Codex Workspace" });
+
+    new Setting(containerEl).setName("Codex Workspace").setHeading();
 
     new Setting(containerEl)
       .setName("Codex CLI 路徑")
