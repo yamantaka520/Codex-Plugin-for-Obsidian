@@ -70,6 +70,7 @@ Make Codex Workspace feel like a native, observable Obsidian collaborator instea
 - Detailed implementation and acceptance plan: [`ROADMAP_0.3.md`](ROADMAP_0.3.md).
 - First data-foundation slice completed: versioned schema, 0.2.x migration, malformed-record recovery, bounded retention, repository operations, and integration with the active Codex conversation.
 - Conversation UI slice implemented: header switcher plus a management modal for filtering, rename, select, archive, restore, and confirmed local-only deletion; GUI acceptance remains deferred to the release-candidate matrix.
+- Local visible-history search and privacy-bounded Markdown export are implemented; export omits thread IDs/protocol data, sanitizes filenames, and never overwrites an existing file.
 
 ### 0.4.0 — Change review
 

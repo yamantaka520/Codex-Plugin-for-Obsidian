@@ -1,6 +1,7 @@
 import { ItemView, MarkdownRenderer, Modal, Notice, setIcon, WorkspaceLeaf } from "obsidian";
 import type CodexWorkspacePlugin from "../main";
 import type { CodexProgressEvent } from "./codex-events";
+import { searchConversations } from "./conversation-utils";
 import {
   buildPromptWithContext,
   type ContextAttachment,
@@ -361,10 +362,7 @@ class ConversationManagerModal extends Modal {
     const list = this.contentEl.querySelector<HTMLElement>(".codex-obsidian-conversation-list");
     if (!list) return;
     list.empty();
-    const query = this.query.trim().toLocaleLowerCase();
-    const conversations = this.plugin.allConversations.filter(({ title }) =>
-      !query || title.toLocaleLowerCase().includes(query)
-    );
+    const conversations = searchConversations(this.plugin.allConversations, this.query);
     if (conversations.length === 0) {
       list.createDiv({ cls: "codex-obsidian-conversation-empty", text: "找不到符合的對話。" });
       return;
@@ -405,6 +403,10 @@ class ConversationManagerModal extends Modal {
       await this.plugin.setConversationArchived(id, !conversation.archived);
       this.onChange();
       this.renderList();
+    });
+    this.iconButton(actions, "file-down", "匯出 Markdown", async () => {
+      const path = await this.plugin.exportConversation(id);
+      new Notice(`已匯出至 ${path}`, 5000);
     });
     this.iconButton(actions, "trash-2", "刪除", () => {
       new DeleteConversationModal(this.plugin, id, async () => {

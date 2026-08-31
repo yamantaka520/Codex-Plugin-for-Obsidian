@@ -1,8 +1,9 @@
-import { FileSystemAdapter, MarkdownView, Notice, Plugin, WorkspaceLeaf } from "obsidian";
+import { FileSystemAdapter, MarkdownView, normalizePath, Notice, Plugin, WorkspaceLeaf } from "obsidian";
 import { CodexChatView, CODEX_VIEW_TYPE } from "./src/chat-view";
 import { CodexClient } from "./src/codex-client";
 import type { CodexProgressEvent } from "./src/codex-events";
 import { ConversationRepository, loadPluginSettings } from "./src/conversation-store";
+import { exportConversationMarkdown, safeExportBasename } from "./src/conversation-utils";
 import { CodexSettingTab } from "./src/settings-tab";
 import type { ChatMessage, Conversation, PluginSettings } from "./src/types";
 
@@ -92,6 +93,22 @@ export default class CodexWorkspacePlugin extends Plugin {
   async deleteConversation(id: string): Promise<void> {
     this.conversations.delete(id);
     await this.persistSettings();
+  }
+
+  async exportConversation(id: string): Promise<string> {
+    const conversation = this.settings.conversations.find((item) => item.id === id);
+    if (!conversation) throw new Error("找不到指定的對話。");
+    const folder = "Codex exports";
+    if (!this.app.vault.getAbstractFileByPath(folder)) await this.app.vault.createFolder(folder);
+    const base = safeExportBasename(conversation.title);
+    let path = normalizePath(`${folder}/${base}.md`);
+    let suffix = 2;
+    while (this.app.vault.getAbstractFileByPath(path)) {
+      path = normalizePath(`${folder}/${base} ${suffix}.md`);
+      suffix += 1;
+    }
+    await this.app.vault.create(path, exportConversationMarkdown(conversation));
+    return path;
   }
 
   async activateView(): Promise<void> {
