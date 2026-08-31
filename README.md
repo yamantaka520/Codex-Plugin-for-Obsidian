@@ -106,7 +106,7 @@ See [SECURITY.md](SECURITY.md) for the threat model and reporting process.
 
 ## Current scope
 
-Version 0.2.0 is an early public beta:
+Version 0.2.1 is an early public beta:
 
 - one Codex turn runs at a time;
 - safe progress events are streamed into the panel without raw command payloads;

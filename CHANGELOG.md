@@ -2,6 +2,12 @@
 
 All notable changes to Codex Workspace are documented here.
 
+## 0.2.1 - 2026-08-31
+
+### Fixed
+
+- Use a generic settings section heading so the Community scanner does not flag a duplicate plugin-name heading.
+
 ## 0.2.0 - 2026-08-31
 
 ### Added

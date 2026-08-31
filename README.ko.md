@@ -51,7 +51,7 @@ Obsidian 왼쪽 Ribbon의 Codex 아이콘을 누르면 오른쪽 사이드바에
 
 ## 현재 제한과 계획
 
-0.2.0은 초기 public beta입니다. 한 번에 하나의 Codex turn만 실행하며 안전한 progress event 스트리밍을 지원하지만 Windows 검증은
+0.2.1은 초기 public beta입니다. 한 번에 하나의 Codex turn만 실행하며 안전한 progress event 스트리밍을 지원하지만 Windows 검증은
 아직 지원되지 않습니다. 다중 대화, 현재 노트 context, 파일 변경 review, GUI 테스트 및
 Obsidian Community Directory 자동 심사 대응을 순차적으로 진행할 예정입니다. 자세한 내용은
 [다음 단계 실행 계획](docs/NEXT_PHASE.md)을 참고하세요.

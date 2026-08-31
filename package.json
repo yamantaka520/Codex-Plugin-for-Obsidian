@@ -1,6 +1,6 @@
 {
   "name": "codex-workspace",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Codex CLI conversation panel for Obsidian",
   "main": "main.js",
   "scripts": {
@@ -9,7 +9,11 @@
     "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.test.mjs",
     "install:local": "npm run build && node scripts/install-local.mjs"
   },
-  "keywords": ["obsidian", "codex", "chatgpt"],
+  "keywords": [
+    "obsidian",
+    "codex",
+    "chatgpt"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.10.2",

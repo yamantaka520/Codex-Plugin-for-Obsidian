@@ -1,7 +1,7 @@
 {
   "id": "codex-workspace",
   "name": "Codex Workspace",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "minAppVersion": "1.7.2",
   "description": "Chat with your existing Codex CLI to organize, edit, and explore notes from a side panel.",
   "author": "yamantaka520",
