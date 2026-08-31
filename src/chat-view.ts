@@ -1,5 +1,11 @@
-import { ItemView, MarkdownRenderer, Notice, setIcon, WorkspaceLeaf } from "obsidian";
+import { ItemView, MarkdownRenderer, MarkdownView, Notice, setIcon, WorkspaceLeaf } from "obsidian";
 import type CodexWorkspacePlugin from "../main";
+import type { CodexProgressEvent } from "./codex-events";
+import {
+  buildPromptWithContext,
+  type ContextAttachment,
+  validateContextAttachment
+} from "./context";
 import type { ChatMessage } from "./types";
 
 export const CODEX_VIEW_TYPE = "codex-workspace-chat";
@@ -10,6 +16,11 @@ export class CodexChatView extends ItemView {
   private sendButton!: HTMLButtonElement;
   private stopButton!: HTMLButtonElement;
   private statusEl!: HTMLElement;
+  private progressEl!: HTMLElement;
+  private contextEl!: HTMLElement;
+  private noteContextButton!: HTMLButtonElement;
+  private selectionContextButton!: HTMLButtonElement;
+  private contextAttachment: ContextAttachment | null = null;
 
   constructor(leaf: WorkspaceLeaf, private readonly plugin: CodexWorkspacePlugin) {
     super(leaf);
@@ -53,6 +64,12 @@ export class CodexChatView extends ItemView {
     this.statusEl = root.createDiv({ cls: "codex-obsidian-status" });
     this.setStatus(this.plugin.settings.sessionId ? "已連接既有對話" : "準備就緒");
 
+    this.progressEl = root.createDiv({ cls: "codex-obsidian-progress" });
+    this.progressEl.hidden = true;
+
+    this.contextEl = root.createDiv({ cls: "codex-obsidian-context" });
+    this.contextEl.hidden = true;
+
     this.messagesEl = root.createDiv({ cls: "codex-obsidian-messages" });
 
     const composer = root.createDiv({ cls: "codex-obsidian-composer" });
@@ -72,6 +89,12 @@ export class CodexChatView extends ItemView {
     });
 
     const actions = composer.createDiv({ cls: "codex-obsidian-actions" });
+    const contextActions = composer.createDiv({ cls: "codex-obsidian-context-actions" });
+    this.noteContextButton = contextActions.createEl("button", { text: "附加目前筆記" });
+    this.noteContextButton.addEventListener("click", () => this.attachContext("active-note"));
+    this.selectionContextButton = contextActions.createEl("button", { text: "附加選取文字" });
+    this.selectionContextButton.addEventListener("click", () => this.attachContext("selection"));
+
     actions.createSpan({
       cls: "codex-obsidian-hint",
       text: this.plugin.settings.sandboxMode === "read-only" ? "唯讀" : "可編輯 Vault"
@@ -121,8 +144,10 @@ export class CodexChatView extends ItemView {
   private async submit(): Promise<void> {
     const prompt = this.inputEl.value.trim();
     if (!prompt || this.plugin.codex.running) return;
+    const codexPrompt = buildPromptWithContext(prompt, this.contextAttachment);
 
     this.inputEl.value = "";
+    this.clearContext();
     const userMessage = this.plugin.createMessage("user", prompt);
     this.plugin.settings.messages.push(userMessage);
     await this.plugin.persistSettings();
@@ -131,7 +156,12 @@ export class CodexChatView extends ItemView {
     this.scrollToBottom();
 
     try {
-      const response = await this.plugin.sendToCodex(prompt, (status) => this.setStatus(status));
+      this.resetProgress();
+      const response = await this.plugin.sendToCodex(
+        codexPrompt,
+        (status) => this.setStatus(status),
+        (event) => this.appendProgress(event)
+      );
       const assistantMessage = this.plugin.createMessage("assistant", response);
       this.plugin.settings.messages.push(assistantMessage);
       await this.plugin.persistSettings();
@@ -158,6 +188,7 @@ export class CodexChatView extends ItemView {
       return;
     }
     await this.plugin.startNewChat();
+    this.resetProgress();
     await this.renderMessages();
     this.setStatus("已開始新對話");
     this.inputEl.focus();
@@ -166,6 +197,8 @@ export class CodexChatView extends ItemView {
   private setBusy(busy: boolean): void {
     this.sendButton.disabled = busy;
     this.inputEl.disabled = busy;
+    this.noteContextButton.disabled = busy;
+    this.selectionContextButton.disabled = busy;
     this.stopButton.hidden = !busy;
   }
 
@@ -173,7 +206,80 @@ export class CodexChatView extends ItemView {
     this.statusEl.setText(text);
   }
 
+  private resetProgress(): void {
+    this.progressEl.empty();
+    this.progressEl.hidden = true;
+  }
+
+  private appendProgress(event: CodexProgressEvent): void {
+    this.progressEl.hidden = false;
+    const row = this.progressEl.createDiv({ cls: `codex-obsidian-progress-row is-${event.state}` });
+    const icon = row.createSpan({ cls: "codex-obsidian-progress-icon" });
+    setIcon(icon, eventIcon(event));
+    row.createSpan({ text: event.label });
+    while (this.progressEl.childElementCount > 12) this.progressEl.firstElementChild?.remove();
+    this.scrollToBottom();
+  }
+
+  private attachContext(kind: ContextAttachment["kind"]): void {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view?.file) {
+      new Notice("請先開啟一份 Markdown 筆記。", 5000);
+      return;
+    }
+
+    const content = kind === "selection" ? view.editor.getSelection() : view.editor.getValue();
+    const attachment: ContextAttachment = { kind, path: view.file.path, content };
+    const error = validateContextAttachment(attachment);
+    if (error) {
+      new Notice(error, 6000);
+      return;
+    }
+
+    this.contextAttachment = attachment;
+    this.renderContextPreview();
+  }
+
+  private renderContextPreview(): void {
+    this.contextEl.empty();
+    const attachment = this.contextAttachment;
+    if (!attachment) {
+      this.contextEl.hidden = true;
+      return;
+    }
+
+    this.contextEl.hidden = false;
+    const header = this.contextEl.createDiv({ cls: "codex-obsidian-context-header" });
+    header.createSpan({
+      text: `${attachment.kind === "selection" ? "選取文字" : "目前筆記"} · ${attachment.path}`
+    });
+    const remove = header.createEl("button", {
+      cls: "clickable-icon",
+      attr: { "aria-label": "移除附加內容" }
+    });
+    setIcon(remove, "x");
+    remove.addEventListener("click", () => this.clearContext());
+    this.contextEl.createEl("pre", { text: attachment.content });
+  }
+
+  private clearContext(): void {
+    this.contextAttachment = null;
+    if (this.contextEl) {
+      this.contextEl.empty();
+      this.contextEl.hidden = true;
+    }
+  }
+
   private scrollToBottom(): void {
     this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
   }
+}
+
+function eventIcon(event: CodexProgressEvent): string {
+  if (event.state === "error") return "circle-x";
+  if (event.state === "success") return "circle-check";
+  if (event.kind === "command") return "terminal";
+  if (event.kind === "file") return "file-pen-line";
+  if (event.kind === "tool") return "wrench";
+  return "loader-circle";
 }

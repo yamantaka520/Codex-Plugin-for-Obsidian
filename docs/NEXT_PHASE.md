@@ -4,6 +4,16 @@
 
 Make Codex Workspace feel like a native, observable Obsidian collaborator instead of a final-response-only CLI wrapper. The next feature release is `0.2.0`.
 
+## Implementation status
+
+- [x] Runtime-validated JSONL parser with normalized thread, final-message, failure, and progress outputs.
+- [x] Safe progress timeline for turn, command, file-change, and tool events without raw payloads.
+- [x] Unit coverage for malformed, unknown, failure, thread, assistant-message, and command events.
+- [x] Process integration coverage for new and resumed sessions using a deterministic fake Codex executable.
+- [x] Active-note and text-selection context controls with exact local preview, one-shot sending, and size validation.
+- [x] Process integration tests for start, resume, failure, stop, cleanup, and reuse.
+- [ ] Two-vault GUI acceptance for the `0.2.0` release candidate.
+
 ## 0.2.0 — Live progress and explicit context
 
 ### Workstream A: typed Codex event pipeline

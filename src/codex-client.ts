@@ -1,6 +1,7 @@
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { access } from "node:fs/promises";
 import { delimiter, isAbsolute } from "node:path";
+import { parseCodexEvent } from "./codex-events.ts";
 import type { CodexRunCallbacks, PluginSettings } from "./types";
 
 const MAC_CODEX_CANDIDATES = [
@@ -8,8 +9,6 @@ const MAC_CODEX_CANDIDATES = [
   "/opt/homebrew/bin/codex",
   "/usr/local/bin/codex"
 ];
-
-type JsonObject = Record<string, unknown>;
 
 export class CodexClient {
   private child: ChildProcessWithoutNullStreams | null = null;
@@ -76,24 +75,13 @@ export class CodexClient {
       let finalText = "";
 
       const consumeLine = (line: string): void => {
-        const event = parseJsonObject(line);
+        const event = parseCodexEvent(line);
         if (!event) return;
 
-        const threadId = readString(event, "thread_id") ??
-          (event.type === "thread.started" ? readString(event, "threadId") : null);
-        if (threadId) callbacks.onThreadId(threadId);
-
-        const item = isJsonObject(event.item) ? event.item : null;
-        if (event.type === "item.completed" && item?.type === "agent_message") {
-          const text = readString(item, "text");
-          if (text) finalText = text;
-        }
-
-        if (event.type === "turn.failed") {
-          const error = isJsonObject(event.error) ? event.error : null;
-          const message = error ? readString(error, "message") : null;
-          if (message) stderr = `${stderr}\n${message}`.trim();
-        }
+        if (event.threadId) callbacks.onThreadId(event.threadId);
+        if (event.finalText) finalText = event.finalText;
+        if (event.errorMessage) stderr = `${stderr}\n${event.errorMessage}`.trim();
+        if (event.progress) callbacks.onProgress(event.progress);
       };
 
       child.stdout.setEncoding("utf8");
@@ -139,24 +127,6 @@ export class CodexClient {
   get running(): boolean {
     return this.child !== null;
   }
-}
-
-function parseJsonObject(line: string): JsonObject | null {
-  if (!line.trim()) return null;
-  try {
-    const value: unknown = JSON.parse(line);
-    return isJsonObject(value) ? value : null;
-  } catch {
-    return null;
-  }
-}
-
-function isJsonObject(value: unknown): value is JsonObject {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function readString(value: JsonObject, key: string): string | null {
-  return typeof value[key] === "string" ? value[key] : null;
 }
 
 function cleanError(stderr: string): string {

@@ -39,6 +39,67 @@
   background: var(--background-secondary);
 }
 
+.codex-obsidian-progress {
+  display: flex;
+  max-height: 160px;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary-alt);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.codex-obsidian-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.codex-obsidian-progress-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.codex-obsidian-progress-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.codex-obsidian-progress-row.is-success {
+  color: var(--text-success);
+}
+
+.codex-obsidian-progress-row.is-error {
+  color: var(--text-error);
+}
+
+.codex-obsidian-context {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+}
+
+.codex-obsidian-context-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.codex-obsidian-context pre {
+  max-height: 150px;
+  margin: 6px 0 0;
+  overflow: auto;
+  white-space: pre-wrap;
+  color: var(--text-normal);
+  font-size: var(--font-ui-smaller);
+}
+
 .codex-obsidian-messages {
   flex: 1;
   min-height: 0;
@@ -135,6 +196,17 @@
   justify-content: flex-end;
   gap: 8px;
   margin-top: 8px;
+}
+
+.codex-obsidian-context-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.codex-obsidian-context-actions button {
+  flex: 1;
+  font-size: var(--font-ui-smaller);
 }
 
 .codex-obsidian-hint {

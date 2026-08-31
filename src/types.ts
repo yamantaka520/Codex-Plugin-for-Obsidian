@@ -18,4 +18,6 @@ export interface PluginSettings {
 export interface CodexRunCallbacks {
   onThreadId: (threadId: string) => void;
   onStatus: (status: string) => void;
+  onProgress: (event: CodexProgressEvent) => void;
 }
+import type { CodexProgressEvent } from "./codex-events";

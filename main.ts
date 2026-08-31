@@ -1,6 +1,7 @@
 import { FileSystemAdapter, Notice, Plugin, WorkspaceLeaf } from "obsidian";
 import { CodexChatView, CODEX_VIEW_TYPE } from "./src/chat-view";
 import { CodexClient } from "./src/codex-client";
+import type { CodexProgressEvent } from "./src/codex-events";
 import { CodexSettingTab } from "./src/settings-tab";
 import type { ChatMessage, PluginSettings } from "./src/types";
 
@@ -55,7 +56,11 @@ export default class CodexWorkspacePlugin extends Plugin {
     await workspace.revealLeaf(leaf);
   }
 
-  async sendToCodex(prompt: string, onStatus: (status: string) => void): Promise<string> {
+  async sendToCodex(
+    prompt: string,
+    onStatus: (status: string) => void,
+    onProgress: (event: CodexProgressEvent) => void
+  ): Promise<string> {
     const adapter = this.app.vault.adapter;
     if (!(adapter instanceof FileSystemAdapter)) {
       throw new Error("Codex CLI 僅支援使用本機檔案系統的 Obsidian Vault。");
@@ -68,7 +73,8 @@ export default class CodexWorkspacePlugin extends Plugin {
           void this.persistSettings();
         }
       },
-      onStatus
+      onStatus,
+      onProgress
     });
   }
 

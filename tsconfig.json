@@ -19,6 +19,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
+    "allowImportingTsExtensions": true,
     "importHelpers": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
