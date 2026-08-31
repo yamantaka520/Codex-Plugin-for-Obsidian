@@ -62,7 +62,7 @@ export class CodexChatView extends ItemView {
     newChat.addEventListener("click", () => void this.startNewChat());
 
     this.statusEl = root.createDiv({ cls: "codex-obsidian-status" });
-    this.setStatus(this.plugin.settings.sessionId ? "已連接既有對話" : "準備就緒");
+    this.setStatus(this.plugin.activeConversation.threadId ? "已連接既有對話" : "準備就緒");
 
     this.progressEl = root.createDiv({ cls: "codex-obsidian-progress" });
     this.progressEl.hidden = true;
@@ -108,7 +108,8 @@ export class CodexChatView extends ItemView {
 
   private async renderMessages(): Promise<void> {
     this.messagesEl.empty();
-    if (this.plugin.settings.messages.length === 0) {
+    const messages = this.plugin.activeConversation.messages;
+    if (messages.length === 0) {
       const empty = this.messagesEl.createDiv({ cls: "codex-obsidian-empty" });
       const icon = empty.createDiv({ cls: "codex-obsidian-empty-icon" });
       setIcon(icon, "sparkles");
@@ -119,7 +120,7 @@ export class CodexChatView extends ItemView {
       return;
     }
 
-    for (const message of this.plugin.settings.messages) {
+    for (const message of messages) {
       await this.appendMessage(message);
     }
     this.scrollToBottom();
@@ -149,7 +150,7 @@ export class CodexChatView extends ItemView {
     this.inputEl.value = "";
     this.clearContext();
     const userMessage = this.plugin.createMessage("user", prompt);
-    this.plugin.settings.messages.push(userMessage);
+    this.plugin.appendMessage(userMessage);
     await this.plugin.persistSettings();
     await this.appendMessage(userMessage);
     this.setBusy(true);
@@ -163,14 +164,14 @@ export class CodexChatView extends ItemView {
         (event) => this.appendProgress(event)
       );
       const assistantMessage = this.plugin.createMessage("assistant", response);
-      this.plugin.settings.messages.push(assistantMessage);
+      this.plugin.appendMessage(assistantMessage);
       await this.plugin.persistSettings();
       await this.appendMessage(assistantMessage);
       this.setStatus("完成");
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const systemMessage = this.plugin.createMessage("system", message);
-      this.plugin.settings.messages.push(systemMessage);
+      this.plugin.appendMessage(systemMessage);
       await this.plugin.persistSettings();
       await this.appendMessage(systemMessage);
       this.setStatus("執行失敗");

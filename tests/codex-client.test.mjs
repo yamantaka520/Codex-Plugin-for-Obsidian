@@ -97,7 +97,6 @@ function settings(sessionId) {
     codexPath: executable,
     sandboxMode: "read-only",
     approveForMe: false,
-    sessionId,
-    messages: []
+    sessionId
   };
 }

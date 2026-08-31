@@ -2,7 +2,7 @@ import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { access } from "node:fs/promises";
 import { delimiter, isAbsolute } from "node:path";
 import { parseCodexEvent } from "./codex-events.ts";
-import type { CodexRunCallbacks, PluginSettings } from "./types";
+import type { CodexExecutionSettings, CodexRunCallbacks } from "./types";
 
 const MAC_CODEX_CANDIDATES = [
   "/Applications/ChatGPT.app/Contents/Resources/codex",
@@ -40,7 +40,7 @@ export class CodexClient {
   async send(
     prompt: string,
     vaultPath: string,
-    settings: PluginSettings,
+    settings: CodexExecutionSettings,
     callbacks: CodexRunCallbacks
   ): Promise<string> {
     if (this.child) throw new Error("Codex is already processing a request.");
@@ -117,7 +117,7 @@ export class CodexClient {
   }
 }
 
-export function buildCodexArgs(settings: PluginSettings, vaultPath: string): string[] {
+export function buildCodexArgs(settings: CodexExecutionSettings, vaultPath: string): string[] {
   if (settings.sessionId) {
     return ["exec", "resume", "--json", settings.sessionId, "-"];
   }

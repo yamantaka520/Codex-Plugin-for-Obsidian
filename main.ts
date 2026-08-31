@@ -2,20 +2,14 @@ import { FileSystemAdapter, MarkdownView, Notice, Plugin, WorkspaceLeaf } from "
 import { CodexChatView, CODEX_VIEW_TYPE } from "./src/chat-view";
 import { CodexClient } from "./src/codex-client";
 import type { CodexProgressEvent } from "./src/codex-events";
+import { ConversationRepository, loadPluginSettings } from "./src/conversation-store";
 import { CodexSettingTab } from "./src/settings-tab";
-import type { ChatMessage, PluginSettings } from "./src/types";
-
-const DEFAULT_SETTINGS: PluginSettings = {
-  codexPath: "codex",
-  sandboxMode: "workspace-write",
-  approveForMe: true,
-  sessionId: null,
-  messages: []
-};
+import type { ChatMessage, Conversation, PluginSettings } from "./src/types";
 
 export default class CodexWorkspacePlugin extends Plugin {
   declare settings: PluginSettings;
   readonly codex = new CodexClient();
+  private conversations!: ConversationRepository;
   private lastMarkdownView: MarkdownView | null = null;
 
   async onload(): Promise<void> {
@@ -69,6 +63,10 @@ export default class CodexWorkspacePlugin extends Plugin {
     return this.lastMarkdownView;
   }
 
+  get activeConversation(): Conversation {
+    return this.conversations.active;
+  }
+
   async activateView(): Promise<void> {
     const workspace = this.app.workspace;
     let leaf = workspace.getLeavesOfType(CODEX_VIEW_TYPE)[0];
@@ -89,10 +87,17 @@ export default class CodexWorkspacePlugin extends Plugin {
       throw new Error("Codex CLI 僅支援使用本機檔案系統的 Obsidian Vault。");
     }
 
-    return await this.codex.send(prompt, adapter.getBasePath(), this.settings, {
+    const conversation = this.activeConversation;
+    return await this.codex.send(prompt, adapter.getBasePath(), {
+      codexPath: this.settings.codexPath,
+      sandboxMode: this.settings.sandboxMode,
+      approveForMe: this.settings.approveForMe,
+      sessionId: conversation.threadId
+    }, {
       onThreadId: (threadId) => {
-        if (this.settings.sessionId !== threadId) {
-          this.settings.sessionId = threadId;
+        if (conversation.threadId !== threadId) {
+          conversation.threadId = threadId;
+          conversation.updatedAt = Date.now();
           void this.persistSettings();
         }
       },
@@ -101,11 +106,11 @@ export default class CodexWorkspacePlugin extends Plugin {
     });
   }
 
-  async startNewChat(): Promise<void> {
-    this.settings.sessionId = null;
-    this.settings.messages = [];
+  async startNewChat(): Promise<Conversation> {
+    const conversation = this.conversations.create();
     await this.persistSettings();
     new Notice("已開始新的 Codex 對話。", 3000);
+    return conversation;
   }
 
   createMessage(role: ChatMessage["role"], text: string): ChatMessage {
@@ -117,17 +122,24 @@ export default class CodexWorkspacePlugin extends Plugin {
     };
   }
 
+  appendMessage(message: ChatMessage): Conversation {
+    return this.conversations.appendMessage(message);
+  }
+
   async persistSettings(): Promise<void> {
     await this.saveData(this.settings);
   }
 
   private async loadSettings(): Promise<void> {
-    const stored = (await this.loadData()) as Partial<PluginSettings> | null;
-    this.settings = {
-      ...DEFAULT_SETTINGS,
-      ...(stored ?? {}),
-      messages: Array.isArray(stored?.messages) ? stored.messages : []
-    };
+    const loaded = loadPluginSettings(await this.loadData());
+    this.settings = loaded.settings;
+    this.conversations = new ConversationRepository(this.settings);
+    if (loaded.migratedLegacy || loaded.recoveredRecords > 0) {
+      await this.persistSettings();
+      if (loaded.recoveredRecords > 0) {
+        new Notice(`已略過 ${loaded.recoveredRecords} 筆無法辨識的舊對話資料。`, 8000);
+      }
+    }
   }
 
   private rememberMarkdownView(leaf: WorkspaceLeaf | null): void {

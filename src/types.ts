@@ -7,12 +7,30 @@ export interface ChatMessage {
   createdAt: number;
 }
 
+export interface Conversation {
+  id: string;
+  title: string;
+  threadId: string | null;
+  createdAt: number;
+  updatedAt: number;
+  archived: boolean;
+  messages: ChatMessage[];
+}
+
 export interface PluginSettings {
   codexPath: string;
   sandboxMode: SandboxMode;
   approveForMe: boolean;
+  schemaVersion: 1;
+  activeConversationId: string;
+  conversations: Conversation[];
+}
+
+export interface CodexExecutionSettings {
+  codexPath: string;
+  sandboxMode: SandboxMode;
+  approveForMe: boolean;
   sessionId: string | null;
-  messages: ChatMessage[];
 }
 
 export interface CodexRunCallbacks {
