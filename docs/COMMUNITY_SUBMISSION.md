@@ -27,15 +27,17 @@ This checklist follows the current official Obsidian developer documentation.
 
 Only the initial version needs manual directory submission. Later updates are discovered from matching GitHub releases.
 
-## Current hand-off status
+## Current submission status
 
-The release and repository are ready, but the Community website is not signed in on this machine. The remaining account-bound steps are:
+Submitted and published to the Community site on August 31, 2026:
 
-1. Sign in with the plugin owner's Obsidian account.
-2. Approve the read-only GitHub account connection.
-3. Review and submit the completed plugin form.
-
-Account authorization and the final public submission should be completed or explicitly approved by the account owner at action time.
+- Entry: <https://community.obsidian.md/plugins/codex-workspace>
+- Version: `0.1.0`
+- Review commit: `799ce23`
+- Status: automated review pending
+- Passed so far: network request scan and dependency vulnerability scan
+- Expected warnings: direct filesystem access and shell execution, both disclosed because the plugin launches Codex CLI and works with the local vault
+- Recommendation: add GitHub artifact attestations for `main.js` and `styles.css`
 
 ## Official documentation
 
